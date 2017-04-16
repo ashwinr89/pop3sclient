@@ -27,7 +27,6 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -97,8 +96,7 @@ public class PopSession {
             protected void initChannel(final SocketChannel ch) throws Exception {
                 ChannelPipeline p = ch.pipeline();
 
-                SslContext ctx2 = SslContextBuilder.forClient().build();
-            	p.addLast("ssl", ctx2.newHandler(ch.alloc(), server, port));
+                p.addLast("ssl", sslContext.newHandler(ch.alloc(), server, port));
                 p.addLast("inactivityHandler", new PopInactivityHandler(thisSession, inactivityTimeout, logger));
                 p.addLast(new DelimiterBasedFrameDecoder(MAX_LINE_LENGTH, Delimiters.lineDelimiter()));
                 p.addLast(new StringDecoder());
